@@ -16,6 +16,7 @@ var sprintf = require('sprintf').sprintf;
 var partials = require('express-partials');
 var jade = require('jade');
 var singly = require('singly');
+var mongoose = require('mongoose');
 
 // The port that this express app will listen on
 var port = process.env.PORT || 7464;
@@ -40,6 +41,22 @@ var expressSingly = require('express-singly')(app, clientId, clientSecret,
 var singly = new singly(clientId, clientSecret, hostBaseUrl + '/callback');
 
 //var singlyUrl = singly.getAuthorizeURL('facebook', { redirect_uri: hostBaseUrl + '/callback' });
+
+// MONGO
+
+mongoose.connect('mongodb://website:test123@alex.mongohq.com:10057/PerilUs');
+
+var Schema = mongoose.Schema
+  , ObjectId = Schema.ObjectId;
+
+// Setup Mongo stuff
+var User = new Schema({
+    id    : ObjectId
+  , name     : String
+  , body      : String
+  , date      : Date
+});
+
 
 // Pick a secret to secure your session storage
 var sessionSecret = '42';
@@ -139,12 +156,34 @@ app.get('/user/:id', function(req, res){});
 app.get('/user/:id/friends', function(req, res){});
 app.put('/user/:id/loc', function(req, res){});
 app.get('/authed', function(req, res){
-  console.log(req.query["code"]);
+  var code = req.param('code');
 
-  res.render('index');
+  // Exchange the OAuth2 code for an access token
+  singly.getAccessToken(code, function(err, accessTokenRes, token) {
+    // Save the token for future API requests
+    req.session.accessToken = token.access_token;
+
+    // Fetch the user's service profile data
+    singly.get('/profiles', { access_token: token.access_token },
+      function(err, profiles) {
+      req.session.profiles = profiles.body;
+
+      // See if the  user exists already
+
+      res.redirect(hostBaseUrl + '/');
+    });
+  });
 });
 
-app.get('/friends', function(req, res){});
+app.get('/friends', function(req, res){
+  // Get the facebook friends for this user
+  singly.
+
+  res.render('friends', {
+
+  })
+});
+
 app.get('/auth', function(req, res){
   res.render('auth', {
     singlyUrl: singly.getAuthorizeURL('facebook')
@@ -155,3 +194,8 @@ app.listen(port);
 
 console.log(sprintf('Listening at %s using API endpoint %s.', hostBaseUrl,
   apiBaseUrl));
+
+function setupUser(id) {
+
+
+}

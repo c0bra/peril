@@ -9,6 +9,7 @@
       "sprintf": "*",
       "express-partials": "*",
       "singly": "",
-      "express-singly": "*"
+      "express-singly": "*",
+      "mongoose": "*"
    }
 }

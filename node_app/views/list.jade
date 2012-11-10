@@ -1,0 +1,13 @@
+
+table
+    thead
+      tr
+        th User
+    tbody
+      tr(ng-repeat='user in users | filter:search | orderBy:\'name\'')
+        td
+          a(href='{{project.site}}', target='_blank') {{user.name}}
+        //- td {{project.description}}
+        //- td
+        //-   a(href='#/edit/{{project._id.$oid}}')
+        //-     i.icon-pencil
