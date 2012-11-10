@@ -3,10 +3,11 @@ var svcurl = 'http://perilustest.com:7464';
 angular.module('perilus', ['mongolab'])
 .config(function($routeProvider, $locationProvider) {
   $routeProvider
-  .when('/', {controller:ListCtrl, templateUrl:'list.html'})
+  .when('/', {controller:ListCtrl, templateUrl:'/friends'})
+  .when('/redirect', { templateUrl:'/redirect' })
   // when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
   // when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
-  .when('/auth', {controller:AuthCtrl, templateUrl:'auth.html'});
+  .when('/auth', {controller:AuthCtrl, templateUrl:'/auth'});
   //.otherwise({redirectTo:'/auth'});
 
 
@@ -19,13 +20,13 @@ angular.module('perilus', ['mongolab'])
   $rootScope.$on( "$routeChangeStart", function(event, next, current) {
     if ( $rootScope.loggedUser == null ) {
       // no logged user, we should be going to #login
-      if ( next.templateUrl == "auth.html" ) {
+      if ( next.templateUrl == "/auth" ) {
         // already going to #login, no redirect needed
       } else {
         // not going to #login, we should redirect now
         $location.path( "/auth" );
       }
-    }         
+    }
   });
 });
  
@@ -48,6 +49,8 @@ function AuthCtrl($scope) {
   //       $scope.loginError = "Invalid user/pass.";
   //   }
   // };
+
+  loadSinglyUrl();
 }
  
 // function CreateCtrl($scope, $location, User) {
@@ -66,3 +69,9 @@ function AuthCtrl($scope) {
 //     query: { method:'GET', params: , isArray:true }
 //   });
 // });
+
+function loadSinglyUrl(){
+  $.get(svcurl + '/singlyurl', function (data) {
+    $('#fbbutton').attr('href', data);
+  });
+}

@@ -37,9 +37,9 @@ var app = express();
 var expressSingly = require('express-singly')(app, clientId, clientSecret,
   hostBaseUrl, hostBaseUrl + '/callback');
 
-var singly = new singly(clientId, clientSecret, hostBaseUrl, hostBaseUrl + '/callback');
+var singly = new singly(clientId, clientSecret, hostBaseUrl + '/callback');
 
-var singlyUrl = singly.getAuthorizeURL('facebook', {});
+//var singlyUrl = singly.getAuthorizeURL('facebook', { redirect_uri: hostBaseUrl + '/callback' });
 
 // Pick a secret to secure your session storage
 var sessionSecret = '42';
@@ -47,8 +47,8 @@ var sessionSecret = '42';
 // Setup for the express web framework
 app.configure(function() {
   // Use ejs instead of jade because HTML is easy
-  app.set('view engine', 'ejs');
-  app.use(partials());
+  app.set('view engine', 'jade');
+  //app.use(partials());
   app.use(express.logger());
   app.use(express['static'](__dirname + '/public'));
   app.use(express.bodyParser());
@@ -69,7 +69,6 @@ app.configure('development', function() {
     showStack: true
   }));
 });
-
 
 
 // The URL of the Singly API endpoint
@@ -106,6 +105,13 @@ var singlyOther = {
   }
 };
 
+// Allow CORS
+app.all('/*', function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  next();
+});
+
 app.get('/', function(req, res) {
   // Render out views/index.ejs, passing in the session
   res.render('index', {
@@ -132,9 +138,17 @@ app.put('/user', function(req, res){});
 app.get('/user/:id', function(req, res){});
 app.get('/user/:id/friends', function(req, res){});
 app.put('/user/:id/loc', function(req, res){});
+app.get('/authed', function(req, res){
+  console.log(req.query["code"]);
 
-app.get('/singlyurl', function(req, res) {
-  res.json({ url: singlyUrl });
+  res.render('index');
+});
+
+app.get('/friends', function(req, res){});
+app.get('/auth', function(req, res){
+  res.render('auth', {
+    singlyUrl: singly.getAuthorizeURL('facebook')
+  });
 });
 
 app.listen(port);

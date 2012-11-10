@@ -1,11 +1,3 @@
 #login.container(style="text-align: center; padding-top: 150px")
   a.btn-auth.btn-facebook#fbbutton(href="#")
     | Sign in with <b>Facebook</b>
-
-
-script
-  $.get(svcurl + '/singlyurl', function (data) {
-    $('#fbbutton').attr('href', data);
-
-    console.log(data);
-  });
