@@ -1,5 +1,5 @@
 !!! 5
-html(lang='en')
+html(lang='en', ng-app="perilus")
 head
     meta(charset='utf-8')
     title Perilus
@@ -48,6 +48,7 @@ head
           //
             /.nav-collapse 
     .container
+      #friends(ng-view)
       
 
     script(src='js/jquery.js')
@@ -64,3 +65,4 @@ head
     script(src='js/bootstrap-carousel.js')
     script(src='js/bootstrap-typeahead.js')
     script(src='js/angular.min.js')
+    script(src="js/perilus.js")
