@@ -15,7 +15,8 @@
     }
     
   </style>
-  <link href="css/bootstrap-responsive.css" rel="stylesheet"><!--
+  <link href="css/bootstrap-responsive.css" rel="stylesheet">
+  <link href="css/auth-buttons.css" rel="stylesheet"><!--
   <HTML5>shim, for IE6-8 support of HTML5 elements </HTML5>--><!--[if lt IE 9]>
   <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]--><!--
   <Fav>and touch icons </Fav>-->
@@ -38,6 +39,7 @@
       </div>
     </div>
   </div>
+  <div id="login" style="text-align: center; display: none; padding-top: 150px" class="container"><a href="#" class="btn-auth btn-facebook">Sign in with <b>Facebook</b></a></div>
   <div class="container">
     <div id="friends" ng-view></div>
   </div>
@@ -56,4 +58,24 @@
   <script src="js/bootstrap-typeahead.js"></script>
   <script src="js/perilus.js"></script>
   <script src="js/mongolab.js"></script>
+  <script>
+    var svcurl = 'localhost:7464';
+    
+    $(document.ready(function(){
+      // First check to to see if the user is authed
+      
+      
+      
+      
+    });
+    
+    function authUser() {
+      // 1. Get the auth token
+      var userAuthToken = window.localStorage.getItem("key");
+      
+      if (! userAuthToken) {
+      
+      }
+    }
+  </script>
 </body>

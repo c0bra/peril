@@ -10,7 +10,7 @@
 // $ node app
 
 var express = require('express');
-var querystring = require('querystring');
+var qs = require('querystring');
 var request = require('request');
 var sprintf = require('sprintf').sprintf;
 var partials = require('express-partials');
@@ -71,7 +71,7 @@ app.configure('development', function() {
 var apiBaseUrl = 'https://api.singly.com';
 
 // accessToken for using singly
-var accessToken = 'LWk5WVTudryYirnLSNFsbCF2jIo';
+var accessToken = 'r2hyvEMa31TJBBrF50F62nCthKQ.15uO48Z547764bea64d8f935c395c3275512326aea78d5280ba59bc300fa7111bf7448252ee914a8789f29e4b0ee52d7eb596edabaadd179feb8f54ade179953fe4d209e625819d64fe17d05bac7d49dc8874b57e9f13f4410b4c66d197f1369b21ea3e3';
 
 // A small wrapper for getting data from the Singly API
 var singly = {
@@ -83,11 +83,19 @@ var singly = {
 
     options.access_token = accessToken;
 
+    url = apiBaseUrl + url;
+    if (qs.stringify(options) !== null && qs.stringify(options) !== "") {
+      url = url + '?' + qs.stringify(options);
+    }
+
+    //console.log(url);
+
     //$.getJSON(apiBaseUrl + url, options, callback);
-    request(apiBaseUrl + url, function (error, response, body) {
+    request(url, function (error, response, body) {
       if (!error && response.statusCode == 200) {
-        console.log(body) // Print the google web page.
+        //console.log(body) // Print the google web page.
       }
+
       callback(body);
     });
   }
@@ -103,14 +111,21 @@ app.get('/', function(req, res) {
 
 app.get('/friends', function(req, res) {
   // Get the 5 latest items from the user's statuses feed
-  singly.get('/types/statuses_feed', { limit: 5 }, function(items) {
+  //singly.get('/types/statuses_feed', { limit: 1 }, function(items) {
+  singly.get('/friends/facebook', { limit: 1 }, function(items) {
     // _.each(items, function(item) {
     //   $('#statuses').append(sprintf('<li><strong>Status:</strong> %s</li>',
     //     item.oembed.text));
     //   });
-    res.json(items);
+
+    console.log(items);
+
+    res.send(items);
   });
 });
+
+app.put('/user', function(req, res){});
+app.get('/user/:id', function(req, res){});
 
 app.listen(port);
 
