@@ -1,0 +1,17 @@
+input.search-query(type='text', ng-model='search', placeholder='Search')
+  table
+      thead
+        tr
+          th Project
+          th Description
+          th
+            a(href='#/new')
+              i.icon-plus-sign
+      tbody
+        tr(ng-repeat='user in users | filter:search | orderBy:\'name\'')
+          td
+            a(href='{{project.site}}', target='_blank') {{user.name}}
+          //- td {{project.description}}
+          //- td
+          //-   a(href='#/edit/{{project._id.$oid}}')
+          //-     i.icon-pencil

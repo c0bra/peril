@@ -12,7 +12,6 @@ function ListCtrl($scope, User) {
   $scope.users = User.query();
 }
  
- 
 // function CreateCtrl($scope, $location, User) {
 //   $scope.save = function() {
 //     User.save($scope.project, function(project) {
