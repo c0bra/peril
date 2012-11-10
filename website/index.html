@@ -39,29 +39,15 @@
       </div>
     </div>
   </div>
-  <div id="login" style="text-align: center; display: none; padding-top: 150px" class="container"><a href="#" class="btn-auth btn-facebook">Sign in with <b>Facebook</b></a></div>
-  <div class="container">
-    <div id="friends" ng-view></div>
-  </div>
-  <script src="js/jquery.js"></script>
-  <script src="js/bootstrap-transition.js"></script>
-  <script src="js/bootstrap-alert.js"></script>
-  <script src="js/bootstrap-modal.js"></script>
-  <script src="js/bootstrap-dropdown.js"></script>
-  <script src="js/bootstrap-scrollspy.js"></script>
-  <script src="js/bootstrap-tab.js"></script>
-  <script src="js/bootstrap-tooltip.js"></script>
-  <script src="js/bootstrap-popover.js"></script>
-  <script src="js/bootstrap-button.js"></script>
-  <script src="js/bootstrap-collapse.js"></script>
-  <script src="js/bootstrap-carousel.js"></script>
-  <script src="js/bootstrap-typeahead.js"></script>
+  <div ng-view class="container"></div>
+  <script src="js/jquery.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
   <script src="js/perilus.js"></script>
+  <script src="js/authRoute.js"></script>
+  <script src="js/userProfile.js"></script>
   <script src="js/mongolab.js"></script>
   <script>
-    var svcurl = 'localhost:7464';
-    
-    $(document.ready(function(){
+    $(document).ready(function(){
       // First check to to see if the user is authed
       
       

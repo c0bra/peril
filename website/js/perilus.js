@@ -1,16 +1,32 @@
-angular.module('perilus', ['mongolab']).
-config(function($routeProvider) {
-  $routeProvider.
-  when('/', {controller:ListCtrl, templateUrl:'list.html'}).
+var svcurl = 'localhost:7464';
+
+angular.module('perilus', ['mongolab'])
+.config(function($routeProvider, $locationProvider) {
+  $routeProvider
+  .when('/', {controller:ListCtrl, templateUrl:'list.html'})
   // when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
   // when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
-  when('/auth', {controller:AuthCtrl, templateUrl:'auth.html'})
-  otherwise({redirectTo:'/auth'});
+  .when('/auth', {controller:AuthCtrl, templateUrl:'auth.html'});
+  //.otherwise({redirectTo:'/auth'});
 
 
   // configure html5 to get links working
   // If you don't do this, you URLs will be base.com/#/home rather than base.com/home
-  $locationProvider.html5Mode(true);
+  //$locationProvider.html5Mode(true);
+})
+.run( function($rootScope, $location) {
+  // register listener to watch route changes
+  $rootScope.$on( "$routeChangeStart", function(event, next, current) {
+    if ( $rootScope.loggedUser == null ) {
+      // no logged user, we should be going to #login
+      if ( next.templateUrl == "auth.html" ) {
+        // already going to #login, no redirect needed
+      } else {
+        // not going to #login, we should redirect now
+        $location.path( "/auth" );
+      }
+    }         
+  });
 });
  
  
@@ -24,7 +40,14 @@ function EditCtrl($scope, User) {
 
 // Authentication
 function AuthCtrl($scope) {
-
+  // $scope.attemptLogin = function() {
+  //   if ( $scope.username == $scope.password ) { // test
+  //       $rootScope.loggedUser = $scope.username;
+  //       $location.path( "/main" );
+  //   } else {
+  //       $scope.loginError = "Invalid user/pass.";
+  //   }
+  // };
 }
  
 // function CreateCtrl($scope, $location, User) {
@@ -37,22 +60,9 @@ function AuthCtrl($scope) {
 
 
 
-angular.module('perilus.routeConfig', ['xc.authRouteProvider'])
-  .config(['authRouteProvider', '$locationProvider', 'userProfileProvider', function (authRouteProvider, $locationProvider, userProfileProvider) {
-    authRouteProvider.
-      all().
-        when('/', {templateUrl: "/static/templates/home.html"}).
-        when('/logout').
-        when('/profile', {templateUrl: "/static/templates/currentUser/edit.html"}).
-        otherwise({redirectTo: '/'})
-    ;
-
-
-    authRouteProvider.
-      only('admin').
-        when('/user', {templateUrl: "/static/templates/user/list.html", controller: UserCtrl}).
-        when('/user/add', {templateUrl: "/static/templates/user/add.html"}).
-        when('/user/edit/:userId', {templateUrl: "/static/templates/user/edit.html"})
-    ;
-    }
-]);
+// angular.module('perilusServices', ['ngResource']).
+//   factory('User', function($resource){
+//     return $resource(svcurl + '/user/:id', {}, {
+//     query: { method:'GET', params: , isArray:true }
+//   });
+// });

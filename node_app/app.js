@@ -15,6 +15,7 @@ var request = require('request');
 var sprintf = require('sprintf').sprintf;
 var partials = require('express-partials');
 var jade = require('jade');
+var singly = require('singly');
 
 // The port that this express app will listen on
 var port = process.env.PORT || 7464;
@@ -74,7 +75,7 @@ var apiBaseUrl = 'https://api.singly.com';
 var accessToken = 'r2hyvEMa31TJBBrF50F62nCthKQ.15uO48Z547764bea64d8f935c395c3275512326aea78d5280ba59bc300fa7111bf7448252ee914a8789f29e4b0ee52d7eb596edabaadd179feb8f54ade179953fe4d209e625819d64fe17d05bac7d49dc8874b57e9f13f4410b4c66d197f1369b21ea3e3';
 
 // A small wrapper for getting data from the Singly API
-var singly = {
+var singlyOther = {
   get: function(url, options, callback) {
     if (options === undefined ||
       options === null) {
@@ -112,7 +113,7 @@ app.get('/', function(req, res) {
 app.get('/friends', function(req, res) {
   // Get the 5 latest items from the user's statuses feed
   //singly.get('/types/statuses_feed', { limit: 1 }, function(items) {
-  singly.get('/friends/facebook', { limit: 1 }, function(items) {
+  singlyOther.get('/friends/facebook', { limit: 1 }, function(items) {
     // _.each(items, function(item) {
     //   $('#statuses').append(sprintf('<li><strong>Status:</strong> %s</li>',
     //     item.oembed.text));
@@ -126,8 +127,11 @@ app.get('/friends', function(req, res) {
 
 app.put('/user', function(req, res){});
 app.get('/user/:id', function(req, res){});
+app.get('/user/:id/', function(req, res){});
 
 app.listen(port);
+
+console.log(singly.authorizationLink('facebook'));
 
 console.log(sprintf('Listening at %s using API endpoint %s.', hostBaseUrl,
   apiBaseUrl));
