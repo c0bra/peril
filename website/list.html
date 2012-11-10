@@ -1,2 +1,13 @@
 
-<input type="text" ng-model="search" placeholder="Search" class="search-query"/>
+<table>
+  <thead>
+    <tr>
+      <th>User</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="user in users | filter:search | orderBy:'name'">
+      <td><a href="{{project.site}}" target="_blank">{{user.name}}</a></td>
+    </tr>
+  </tbody>
+</table>
