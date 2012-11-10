@@ -37,6 +37,10 @@ var app = express();
 var expressSingly = require('express-singly')(app, clientId, clientSecret,
   hostBaseUrl, hostBaseUrl + '/callback');
 
+var singly = new singly(clientId, clientSecret, hostBaseUrl, hostBaseUrl + '/callback');
+
+var singlyUrl = singly.getAuthorizeURL('facebook', {});
+
 // Pick a secret to secure your session storage
 var sessionSecret = '42';
 
@@ -102,7 +106,6 @@ var singlyOther = {
   }
 };
 
-
 app.get('/', function(req, res) {
   // Render out views/index.ejs, passing in the session
   res.render('index', {
@@ -127,11 +130,14 @@ app.get('/friends', function(req, res) {
 
 app.put('/user', function(req, res){});
 app.get('/user/:id', function(req, res){});
-app.get('/user/:id/', function(req, res){});
+app.get('/user/:id/friends', function(req, res){});
+app.put('/user/:id/loc', function(req, res){});
+
+app.get('/singlyurl', function(req, res) {
+  res.json({ url: singlyUrl });
+});
 
 app.listen(port);
-
-console.log(singly.authorizationLink('facebook'));
 
 console.log(sprintf('Listening at %s using API endpoint %s.', hostBaseUrl,
   apiBaseUrl));

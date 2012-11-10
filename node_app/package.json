@@ -8,6 +8,7 @@
       "request": "2.9.203",
       "sprintf": "*",
       "express-partials": "*",
+      "singly": "",
       "express-singly": "*"
    }
 }

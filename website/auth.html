@@ -1,0 +1,9 @@
+
+<div id="login" style="text-align: center; padding-top: 150px" class="container"><a id="fbbutton" href="#" class="btn-auth btn-facebook">Sign in with <b>Facebook</b></a></div>
+<script>
+  $.get(svcurl + '/singlyurl', function (data) {
+    $('#fbbutton').attr('href', data);
+    
+    console.log(data);
+  });
+</script>
