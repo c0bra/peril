@@ -9,6 +9,7 @@
 //
 // $ node app
 
+var _ = require('underscore');
 var express = require('express');
 var RedisStore = require('connect-redis')(express);
 var qs = require('querystring');
@@ -18,6 +19,7 @@ var partials = require('express-partials');
 var jade = require('jade');
 var singly = require('singly');
 var mongoose = require('mongoose');
+var eyes = require('eyes');
 
 // The port that this express app will listen on
 var port = process.env.PORT || 7464;
@@ -60,7 +62,7 @@ var UserSchema = new Schema({
   , lat         : Number
   , long        : Number
   , zip         : Number
-  , friends     : [String]
+  , friends     : Object
 }, { collection : 'user' });
 
 var User = mongoose.model('user', UserSchema);
@@ -116,34 +118,6 @@ var apiBaseUrl = 'https://api.singly.com';
 // accessToken for using singly
 var accessToken = 'r2hyvEMa31TJBBrF50F62nCthKQ.15uO48Z547764bea64d8f935c395c3275512326aea78d5280ba59bc300fa7111bf7448252ee914a8789f29e4b0ee52d7eb596edabaadd179feb8f54ade179953fe4d209e625819d64fe17d05bac7d49dc8874b57e9f13f4410b4c66d197f1369b21ea3e3';
 
-// A small wrapper for getting data from the Singly API
-var singlyOther = {
-  get: function(url, options, callback) {
-    if (options === undefined ||
-      options === null) {
-      options = {};
-    }
-
-    options.access_token = accessToken;
-
-    url = apiBaseUrl + url;
-    if (qs.stringify(options) !== null && qs.stringify(options) !== "") {
-      url = url + '?' + qs.stringify(options);
-    }
-
-    //console.log(url);
-
-    //$.getJSON(apiBaseUrl + url, options, callback);
-    request(url, function (error, response, body) {
-      if (!error && response.statusCode == 200) {
-        //console.log(body) // Print the google web page.
-      }
-
-      callback(body);
-    });
-  }
-};
-
 // Allow CORS
 app.all('/*', function(req, res, next) {
 
@@ -155,7 +129,7 @@ app.all('/*', function(req, res, next) {
 app.get('/', function(req, res) {
   // Render out views/index.ejs, passing in the session
 
-  console.log(req.session);
+  //console.log(req.session);
 
   res.render('index', {
     session: req.session
@@ -178,7 +152,7 @@ app.get('/authed', function(req, res){
     // Save the token for future API requests
     req.session.accessToken = token.access_token;
 
-    console.log(req.session);
+    //console.log(req.session);
 
     // Fetch the user's service profile data
     singly.get('/services/facebook/self', { access_token: token.access_token },
@@ -204,9 +178,6 @@ app.get('/authed', function(req, res){
             console.log(err);
           }
 
-          // console.log("USER");
-          // console.log(user);
-
           if (user === null) {
             var user = new User({
               singlyid: id,
@@ -231,8 +202,6 @@ app.get('/authed', function(req, res){
 
             user.save(function(err){
               req.session.user = user;
-              // console.log("Saved!");
-              // console.log(user);
 
               res.redirect(hostBaseUrl + '/');
               // res.render('index', {
@@ -247,11 +216,42 @@ app.get('/authed', function(req, res){
 
 app.get('/api/friends', function(req, res){
   // Get the facebook friends for this user
-  console.log(req.session);
 
-  singly.get('/services/facebook/friends', { access_token: req.session.accessToken }, function (err, sres) {
-    var friends = sres.body;
-    res.send(friends);
+  getCurrentUser(req, function(user){
+    singly.get('/services/facebook/friends', { access_token: req.session.accessToken }, function (err, sres) {
+      var friends = sres.body;
+
+      // Made id list of friends
+      var friend_ids = _.map(friends, function(f){ return f.id });
+      
+      // Get the list of this user's friends he's following
+      User.find({'singlyid': { '$in': friend_ids } }, function(err, founds){
+        // 'founds' is the list of users the current user is following
+
+        var avail = [];
+
+        _.each(friends, function(f) {
+          var matched = _.where(founds, { "singlyid": f.id });
+
+          if (matched.length > 0) {
+            var match = matched[0];
+            //console.log(match);
+            //eyes.inspect(user.friends, false, null);
+
+            if (typeof(user.friends[match._id]) != "undefined" && user.friends[match._id] != null) {
+              f.following = true;
+              f._id = match._id;
+
+              console.log("Yep!");
+            }
+
+            avail.push(f);
+          }
+        });
+
+        res.send(avail);
+      });
+    });
   });
 });
 
@@ -261,13 +261,42 @@ app.get('/auth', function(req, res){
   });
 });
 
-app.get('/test1', function(req, res){
-  req.session.blah = "Hi there!";
-  res.send(req.session.blah);
+// Follow a user
+app.post('/api/follow', function(req, res) {
+  var id = req.param('id');
+  console.log("FOLLOW: " + id);
+
+  getCurrentUser(req, function(user) {
+    user.friends.id = true;
+    user.save(function(err){
+      req.session.user = user;
+
+      res.json({ status: 'followed '});
+    });
+  });
 });
 
-app.get('/test2', function(req, res){
-  res.send(req.session.blah);
+// Unfollow a user
+app.post('/api/unfollow', function(req, res) {
+  var id = req.param('id');
+  console.log("UNFOLLOW: " + id);
+
+  // Get the current user
+  getCurrentUser(req, function(user) {
+    eyes.inspect(user.friends);
+
+    user.friends[id] = false;
+
+    eyes.inspect(user.friends);
+
+    user.save(function(err){
+      console.log("ERR: " + err);
+
+      req.session.user = user;
+
+      res.json({ status: 'unfollowed '});
+    });
+  });
 });
 
 app.listen(port);
@@ -275,6 +304,11 @@ app.listen(port);
 console.log(sprintf('Listening at %s using API endpoint %s.', hostBaseUrl,
   apiBaseUrl));
 
-function setupUser(id) {
 
+function getCurrentUser(req, callback) {
+  var id = req.session.user._id;
+
+  User.findById(id, function(err, user) {
+    callback(user);
+  });
 }

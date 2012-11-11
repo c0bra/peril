@@ -14,3 +14,7 @@
 #friends .buttons {
 	padding-top: 5px;
 }
+
+.friend .buttons .btn:not(:first-child) {
+	margin-right: 5px !important;
+}

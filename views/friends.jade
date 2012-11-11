@@ -11,7 +11,10 @@
         br
 
         .buttons
-          a.btn.btn-danger OFF 
-          a.btn.btn-inverse ON 
+          a.btn.btn-danger(ng-class="{ disabled : !friend.following }", ng-disabled="{{!friend.following}}", ng-click="unfollow(friend)") OFF 
+          a.btn.btn-inverse(ng-class="{ disabled : friend.following }", ng-disabled="{{friend.following}}", ng-click="follow(friend)") ON
+
+        br
+        | {{friend.following}}
 
       p.clearfix

@@ -36,6 +36,14 @@ function FriendsCtrl($scope, $http) {
   $http.get('/api/friends').success(function(data) {
     $scope.friends = data;
   });
+
+  $scope.follow = function(friend) {
+    $http.post('/api/follow', { id: friend._id });
+  }
+
+  $scope.unfollow = function(friend) {
+    $http.post('/api/unfollow', { id: friend._id });
+  }
 }
 
 function EditCtrl($scope, User) {

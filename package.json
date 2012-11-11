@@ -5,8 +5,8 @@
    },
    "version": "0.0.4",
    "dependencies": {
-      "ejs": "*",
-      "express": "3.*",
+      "underscore": "*",
+      "express": "3.0.2",
       "querystring": "*",
       "request": "2.9.203",
       "sprintf": "*",
