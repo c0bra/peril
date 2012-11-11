@@ -350,12 +350,14 @@ app.post('/api/user/latlong', function(req, res) {
 app.get('/api/friend_hazards', function(req, res) {
   // Get the hazards for the users the current user is following;
   getCurrentUser(req, function(user) {
-    var friend_ids = _.map(user.friends, function(f) { f._id });
+    var friend_ids = _.keys(user.friends);
 
-    // console.log(friend_ids);
+    console.log(friend_ids);
 
     if (typeof(friend_ids) != "undefined" && friend_ids != null && friend_ids.length > 0) {
       UserHazard.find({ 'userid': { $in: friend_ids } }, function(err, uhazs) {
+        console.log(uhazs);
+
         // Get the 
         _.each(uhazs, function(h) {
           console.log(h);
@@ -365,7 +367,7 @@ app.get('/api/friend_hazards', function(req, res) {
             h.friend = fu;
           });
         });
-
+        
         res.json(uhazs);
       });
     }
