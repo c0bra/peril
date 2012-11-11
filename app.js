@@ -19,6 +19,7 @@ var partials = require('express-partials');
 var jade = require('jade');
 var singly = require('singly');
 var mongoose = require('mongoose');
+var ironWorker = require('iron_worker');
 var eyes = require('eyes');
 
 // The port that this express app will listen on
@@ -43,7 +44,11 @@ var expressSingly = require('express-singly')(app, clientId, clientSecret,
 
 var singly = new singly(clientId, clientSecret, hostBaseUrl + '/authed');
 
-//var singlyUrl = singly.getAuthorizeURL('facebook', { redirect_uri: hostBaseUrl + '/callback' });
+var ironClient = new ironWorker.Client({
+  project_id: ,
+  token: ,
+  api_version: ,
+});
 
 // MONGO
 
@@ -302,7 +307,27 @@ app.post('/api/unfollow', function(req, res) {
     user.save(function(err){
       req.session.user = user;
 
-      res.json({ status: 'unfollowed '});
+      res.json({ status: 'unfollowed' });
+    });
+  });
+});
+
+// Update user's location
+app.post('/api/user/latlong', function(req, res) {
+  var lat = req.param('lat');
+  var long = req.param('long');
+
+  getCurrentUser(req, function(user) {
+    user.lat = lat;
+    user.long = long;
+
+    ironClient..tasksCreate('hello', { id: user._id, lat: lat, long: long }, {}, function(error, body) {
+      console.log("BODY: ");
+      console.log(body);
+    });
+
+    user.save(function(err){
+        res.json({ status: "updated" });
     });
   });
 });

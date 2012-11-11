@@ -81,5 +81,12 @@ head
         //-   'Lon: ' + position.coords.longitude);
         console.log(position.coords.latitude, position.coords.longitude);
 
+        $.post('/api/user/latlong', {
+            lat: position.coords.latitude,
+            long: position.coords.longitude
+        }, function(data) {
+            console.log(data);
+        });
+
         window.setTimeout(initiate_geolocation, 10000);
       }  
