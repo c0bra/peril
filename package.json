@@ -17,7 +17,6 @@
       "connect-redis": "*"
    },
    "engines": {
-    "node": "*",
-    "npm": "*"
+    "node": "0.8.*"
    }
 }
