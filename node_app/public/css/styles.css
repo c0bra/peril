@@ -11,22 +11,6 @@
 	padding-right: 10px;
 }
 
-.on{
-    background: #505050;
-    background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#777), to(#505050));
-    text-shadow:0 -1px 0 #444, 0 0 7px #9AE658;
-    border-right:1px solid #444;
-    border-top:1px solid #444;
-    border-bottom:1px solid #444;
-    -webkit-box-shadow:0 1px 2px rgba(0, 0, 0, .7) inset, 0 1px 0 #FFF;  
-}
-
-ul li:not(.on):active{
-    background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#ddd), to(#f1f1f1));
-}
-
-
-ul li.on a{
-    color:#7BBA47;
-    cursor: default;
+#friends .buttons {
+	padding-top: 5px;
 }
