@@ -45,9 +45,10 @@ var expressSingly = require('express-singly')(app, clientId, clientSecret,
 var singly = new singly(clientId, clientSecret, hostBaseUrl + '/authed');
 
 var ironClient = new ironWorker.Client({
-  project_id: ,
-  token: ,
-  api_version: ,
+  // {"token":"hNIrdqPDhrGlwH_KZGOyhi5pPGA","project_id":"509e84e7a649802d7c006030"}
+  project_id: '509e84e7a649802d7c006030',
+  token: 'hNIrdqPDhrGlwH_KZGOyhi5pPGA',
+  // api_version: ,
 });
 
 // MONGO
@@ -321,7 +322,7 @@ app.post('/api/user/latlong', function(req, res) {
     user.lat = lat;
     user.long = long;
 
-    ironClient..tasksCreate('hello', { id: user._id, lat: lat, long: long }, {}, function(error, body) {
+    ironClient.tasksCreate('hello', { singlyid: 'bhann', lat: lat, long: long }, {}, function(error, body) {
       console.log("BODY: ");
       console.log(body);
     });
