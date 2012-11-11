@@ -1,10 +1,16 @@
 
-table
-    thead
-      tr
-        th User
-    tbody
-      tr(ng-repeat='friend in friends | filter:search | orderBy:\'name\'')
-        td
-          | Blah blah: {{friend.data.name}}
-        
+#friends
+  h3 Friends
+  .span8
+  
+  .span6.well(ng-repeat='friend in friends | orderBy:friend.data.name ')
+    .span12.friend
+      img.profile-photo.pull-left(src="{{friend.data.picture.data.url}}") 
+      .friend-text
+        | {{friend.data.name}}
+        br
+        ul
+        li: a(href="#") OFF
+        li.on: a(href="#") ON
+
+      p.clearfix
