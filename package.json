@@ -14,7 +14,8 @@
       "singly": "",
       "express-singly": "*",
       "mongoose": "*",
-      "connect-redis": "*"
+      "connect-redis": "*",
+      "jade": "*"
    },
    "engines": {
     "node": "0.8.*",

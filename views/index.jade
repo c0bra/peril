@@ -69,24 +69,18 @@ head
     script
       $(document).ready(function(){
         // First check to to see if the user is authed
-        
-        //- jQuery(window).ready(function(){  
-        //-     jQuery("#btnInit").click(initiate_geolocation);  
-        //- });  
-        //- function initiate_geolocation() {  
-        //-     navigator.geolocation.getCurrentPosition(handle_geolocation_query);  
-        //- }  
-        //- function handle_geolocation_query(position){  
-        //-     alert('Lat: ' + position.coords.latitude + ' ' +  
-        //-           'Lon: ' + position.coords.longitude);  
-        //- }  
+
+        if (accessToken != null && accessToken != "") {
+          window.setTimeout(initiate_geolocation, 1000);
+        }
       });
 
-      function authUser() {
-        // 1. Get the auth token
-        var userAuthToken = window.localStorage.getItem("key");
+      function initiate_geolocation() {  
+        navigator.geolocation.getCurrentPosition(handle_geolocation_query);  
+      }  
 
-        if (! userAuthToken) {
-          
-        }
-      }
+      function handle_geolocation_query(position){  
+        //- alert('Lat: ' + position.coords.latitude + ' ' +  
+        //-   'Lon: ' + position.coords.longitude);
+        console.log(position.coords.latitude, position.coords.longitude)
+      }  
