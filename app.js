@@ -232,17 +232,12 @@ app.get('/api/friends', function(req, res){
     singly.get('/services/facebook/friends', opts, function (err, sres) {
       var friends = sres.body;
 
-      console.log("Count:" + friends.length);
-
       // Made id list of friends
       var friend_ids = _.map(friends, function(f){ return f.id });
-      
-      console.log(friend_ids);
 
       // Get the list of this user's friends he's following
       User.find({'singlyid': { '$in': friend_ids } }, function(err, founds){
         // 'founds' is the list of users the current user is following
-        console.log(founds);
 
         var avail = [];
 
