@@ -18,7 +18,7 @@ angular.module('perilus', ['mongolab'])
 .run( function($rootScope, $location) {
   // register listener to watch route changes
   $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-    if ( accessToken == null ) {
+    if ( accessToken === null || accessToken === "" ) {
       // no logged user, we should be going to #login
       if ( next.templateUrl == "/auth" ) {
         // already going to #login, no redirect needed

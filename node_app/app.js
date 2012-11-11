@@ -38,7 +38,7 @@ var app = express();
 var expressSingly = require('express-singly')(app, clientId, clientSecret,
   hostBaseUrl, hostBaseUrl + '/callback');
 
-var singly = new singly(clientId, clientSecret, hostBaseUrl + '/callback');
+var singly = new singly(clientId, clientSecret, hostBaseUrl + '/authed');
 
 //var singlyUrl = singly.getAuthorizeURL('facebook', { redirect_uri: hostBaseUrl + '/callback' });
 
@@ -50,12 +50,18 @@ var Schema = mongoose.Schema
   , ObjectId = Schema.ObjectId;
 
 // Setup Mongo stuff
-var User = new Schema({
-    id    : ObjectId
-  , name     : String
-  , body      : String
-  , date      : Date
-});
+var UserSchema = new Schema({
+    id          : ObjectId
+  , singlyid    : String
+  , name        : String
+  , perilStatus : Number
+  , lat         : Number
+  , long        : Number
+  , zip         : Number
+  , friends     : [String]
+}, { collection : 'user' });
+
+var User = mongoose.model('user', UserSchema);
 
 
 // Pick a secret to secure your session storage
@@ -66,7 +72,7 @@ app.configure(function() {
   // Use ejs instead of jade because HTML is easy
   app.set('view engine', 'jade');
   //app.use(partials());
-  app.use(express.logger());
+  //app.use(express.logger());
   app.use(express['static'](__dirname + '/public'));
   app.use(express.bodyParser());
   app.use(express.cookieParser());
@@ -145,8 +151,6 @@ app.get('/friends', function(req, res) {
     //     item.oembed.text));
     //   });
 
-    console.log(items);
-
     res.send(items);
   });
 });
@@ -164,20 +168,61 @@ app.get('/authed', function(req, res){
     req.session.accessToken = token.access_token;
 
     // Fetch the user's service profile data
-    singly.get('/profiles', { access_token: token.access_token },
-      function(err, profiles) {
-      req.session.profiles = profiles.body;
+    singly.get('/services/facebook/self', { access_token: token.access_token },
+      function(err, fbself) {
+        var profile = fbself.body[0];
+        req.session.profile = profile;
 
-      // See if the  user exists already
+        console.log(req.session.profile);
 
-      res.redirect(hostBaseUrl + '/');
+        if (typeof req.session.profile.id != null && req.session.profile.id != "") {
+          var id = req.session.profile.id;
+        }
+
+        if (typeof(id) == undefined || id == null) {
+          res.send("ERROR");
+        }
+
+        console.log("ID: " + id);
+
+        // See if the  user exists already
+        User.findOne({ 'singlyid': id }, function (err, user) {
+          if (err) {
+            console.log(err);
+          }
+
+          console.log("USER");
+          console.log(user);
+
+          if (user === null) {
+            var user = new User({
+              singlyid: id,
+              name: profile.data.name,
+              friends: []
+            });
+
+            user.save(function(err){
+              if (err) { console.log("ERROR!"); }
+
+              console.log("Saving!");
+
+              req.session.user = user;
+
+              res.redirect(hostBaseUrl + '/');
+            });
+          }
+          else {
+            req.session.user = user;
+
+            res.redirect(hostBaseUrl + '/');
+          }
+      });
     });
   });
 });
 
 app.get('/friends', function(req, res){
   // Get the facebook friends for this user
-  singly.
 
   res.render('friends', {
 
@@ -196,6 +241,5 @@ console.log(sprintf('Listening at %s using API endpoint %s.', hostBaseUrl,
   apiBaseUrl));
 
 function setupUser(id) {
-
 
 }
