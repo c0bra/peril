@@ -38,11 +38,15 @@ function FriendsCtrl($scope, $http) {
   });
 
   $scope.follow = function(friend) {
-    $http.post('/api/follow', { id: friend._id });
+    $http.post('/api/follow', { id: friend._id }).success(function(){
+      friend.following = true;
+    });
   }
 
   $scope.unfollow = function(friend) {
-    $http.post('/api/unfollow', { id: friend._id });
+    $http.post('/api/unfollow', { id: friend._id }).success(function(){
+      friend.following = false;
+    });
   }
 }
 

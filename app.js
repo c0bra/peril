@@ -62,7 +62,8 @@ var UserSchema = new Schema({
   , lat         : Number
   , long        : Number
   , zip         : Number
-  , friends     : Object
+  , friends     : Schema.Types.Mixed
+  , blah        : Number
 }, { collection : 'user' });
 
 var User = mongoose.model('user', UserSchema);
@@ -237,12 +238,10 @@ app.get('/api/friends', function(req, res){
             var match = matched[0];
             //console.log(match);
             //eyes.inspect(user.friends, false, null);
+            f._id = match._id;
 
             if (typeof(user.friends[match._id]) != "undefined" && user.friends[match._id] != null) {
               f.following = true;
-              f._id = match._id;
-
-              console.log("Yep!");
             }
 
             avail.push(f);
@@ -264,10 +263,10 @@ app.get('/auth', function(req, res){
 // Follow a user
 app.post('/api/follow', function(req, res) {
   var id = req.param('id');
-  console.log("FOLLOW: " + id);
 
   getCurrentUser(req, function(user) {
-    user.friends.id = true;
+    user.friends[id] = true;
+    user.markModified('friends');
     user.save(function(err){
       req.session.user = user;
 
@@ -279,19 +278,17 @@ app.post('/api/follow', function(req, res) {
 // Unfollow a user
 app.post('/api/unfollow', function(req, res) {
   var id = req.param('id');
-  console.log("UNFOLLOW: " + id);
 
   // Get the current user
   getCurrentUser(req, function(user) {
-    eyes.inspect(user.friends);
-
-    user.friends[id] = false;
+    req.session.user = undefined;
 
     eyes.inspect(user.friends);
+
+    delete user.friends[id];
+    user.markModified('friends');
 
     user.save(function(err){
-      console.log("ERR: " + err);
-
       req.session.user = user;
 
       res.json({ status: 'unfollowed '});
