@@ -12,5 +12,9 @@
       "express-singly": "*",
       "mongoose": "*",
       "connect-redis": "*"
+   },
+   "engines": {
+    "node": "*",
+    "npm": "*"
    }
 }

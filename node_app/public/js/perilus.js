@@ -1,5 +1,5 @@
 //var svcurl = 'http://perilustest.com:7464';
-var svcurl = 'http://localhost:7464';
+//var svcurl = 'http://localhost:7464';
 
 angular.module('perilus', ['mongolab'])
 .config(function($routeProvider, $locationProvider) {
@@ -33,7 +33,7 @@ angular.module('perilus', ['mongolab'])
  
 function FriendsCtrl($scope, $http) {
   // Get the friends
-  $http.get(svcurl + '/api/friends').success(function(data) {
+  $http.get('/api/friends').success(function(data) {
     $scope.friends = data;
   });
 }
