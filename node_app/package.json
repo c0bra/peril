@@ -1,5 +1,8 @@
 {
    "name": "nodejs_express_skeleton",
+   "scripts": {
+      "start": "node app"
+   },
    "version": "0.0.4",
    "dependencies": {
       "ejs": "*",
