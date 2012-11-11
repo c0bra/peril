@@ -1,4 +1,4 @@
-var svcurl = 'http://perilustest.com:7464';
+var svcurl = 'http://perilus.herokuapp.com:7464';
 
 angular.module('perilus', ['mongolab'])
 .config(function($routeProvider, $locationProvider) {
