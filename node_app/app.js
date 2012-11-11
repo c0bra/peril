@@ -10,6 +10,7 @@
 // $ node app
 
 var express = require('express');
+var RedisStore = require('connect-redis')(express);
 var qs = require('querystring');
 var request = require('request');
 var sprintf = require('sprintf').sprintf;
@@ -53,6 +54,7 @@ var Schema = mongoose.Schema
 var UserSchema = new Schema({
     id          : ObjectId
   , singlyid    : String
+  , accessToken : String
   , name        : String
   , perilStatus : Number
   , lat         : Number
@@ -67,6 +69,13 @@ var User = mongoose.model('user', UserSchema);
 // Pick a secret to secure your session storage
 var sessionSecret = '42';
 
+var redisOpts = {
+  host:     'fish.redistogo.com',
+  port:     9326,
+  db:       'perilus',
+  password: '0420f6b98d1069f40907df97a69776f3'
+};
+
 // Setup for the express web framework
 app.configure(function() {
   // Use ejs instead of jade because HTML is easy
@@ -75,9 +84,16 @@ app.configure(function() {
   //app.use(express.logger());
   app.use(express['static'](__dirname + '/public'));
   app.use(express.bodyParser());
+  
   app.use(express.cookieParser());
   app.use(express.session({
-    secret: sessionSecret
+    secret: sessionSecret,
+    store: new RedisStore({
+      host: redisOpts.host,
+      port: redisOpts.port,
+      db: redisOpts.db,
+      pass: redisOpts.password
+    })
   }));
   expressSingly.configuration();
   app.use(app.router);
@@ -130,6 +146,7 @@ var singlyOther = {
 
 // Allow CORS
 app.all('/*', function(req, res, next) {
+
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "X-Requested-With");
   next();
@@ -137,22 +154,16 @@ app.all('/*', function(req, res, next) {
 
 app.get('/', function(req, res) {
   // Render out views/index.ejs, passing in the session
+
+  console.log(req.session);
+
   res.render('index', {
     session: req.session
   });
 });
 
 app.get('/friends', function(req, res) {
-  // Get the 5 latest items from the user's statuses feed
-  //singly.get('/types/statuses_feed', { limit: 1 }, function(items) {
-  singlyOther.get('/friends/facebook', { limit: 1 }, function(items) {
-    // _.each(items, function(item) {
-    //   $('#statuses').append(sprintf('<li><strong>Status:</strong> %s</li>',
-    //     item.oembed.text));
-    //   });
-
-    res.send(items);
-  });
+  res.render('friends');
 });
 
 app.put('/user', function(req, res){});
@@ -167,23 +178,25 @@ app.get('/authed', function(req, res){
     // Save the token for future API requests
     req.session.accessToken = token.access_token;
 
+    console.log(req.session);
+
     // Fetch the user's service profile data
     singly.get('/services/facebook/self', { access_token: token.access_token },
       function(err, fbself) {
         var profile = fbself.body[0];
-        req.session.profile = profile;
+        // req.session.profile = profile;
 
-        console.log(req.session.profile);
+        //console.log(req.session.profile);
 
-        if (typeof req.session.profile.id != null && req.session.profile.id != "") {
-          var id = req.session.profile.id;
+        if (typeof profile.id != null && profile.id != "") {
+          var id = profile.id;
         }
 
         if (typeof(id) == undefined || id == null) {
           res.send("ERROR");
         }
 
-        console.log("ID: " + id);
+        //console.log("ID: " + id);
 
         // See if the  user exists already
         User.findOne({ 'singlyid': id }, function (err, user) {
@@ -191,48 +204,70 @@ app.get('/authed', function(req, res){
             console.log(err);
           }
 
-          console.log("USER");
-          console.log(user);
+          // console.log("USER");
+          // console.log(user);
 
           if (user === null) {
             var user = new User({
               singlyid: id,
               name: profile.data.name,
+              accessToken: req.session.accessToken,
               friends: []
             });
 
             user.save(function(err){
               if (err) { console.log("ERROR!"); }
 
-              console.log("Saving!");
-
               req.session.user = user;
 
               res.redirect(hostBaseUrl + '/');
+              // res.render('index', {
+              //   session: req.session
+              // });
             });
           }
           else {
-            req.session.user = user;
+            user.accessToken = req.session.accessToken;
 
-            res.redirect(hostBaseUrl + '/');
+            user.save(function(err){
+              req.session.user = user;
+              // console.log("Saved!");
+              // console.log(user);
+
+              res.redirect(hostBaseUrl + '/');
+              // res.render('index', {
+              //   session: req.session
+              // });
+            });
           }
       });
     });
   });
 });
 
-app.get('/friends', function(req, res){
+app.get('/api/friends', function(req, res){
   // Get the facebook friends for this user
+  console.log(req.session);
 
-  res.render('friends', {
-
-  })
+  singly.get('/services/facebook/friends', { access_token: req.session.accessToken }, function (err, sres) {
+    var friends = sres.body;
+    res.send(friends);
+  });
 });
 
 app.get('/auth', function(req, res){
   res.render('auth', {
     singlyUrl: singly.getAuthorizeURL('facebook')
   });
+});
+
+app.get('/test1', function(req, res){
+  req.session.blah = "Hi there!";
+  res.send(req.session.blah);
+});
+
+app.get('/test2', function(req, res){
+  res.send(req.session.blah);
 });
 
 app.listen(port);

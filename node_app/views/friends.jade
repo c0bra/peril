@@ -1,0 +1,10 @@
+
+table
+    thead
+      tr
+        th User
+    tbody
+      tr(ng-repeat='friend in friends | filter:search | orderBy:\'name\'')
+        td
+          | Blah blah: {{friend.data.name}}
+        

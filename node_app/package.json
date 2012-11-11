@@ -10,6 +10,7 @@
       "express-partials": "*",
       "singly": "",
       "express-singly": "*",
-      "mongoose": "*"
+      "mongoose": "*",
+      "connect-redis": "*"
    }
 }

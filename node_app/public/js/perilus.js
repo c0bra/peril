@@ -1,9 +1,10 @@
-var svcurl = 'http://perilustest.com:7464';
+//var svcurl = 'http://perilustest.com:7464';
+var svcurl = 'http://localhost:7464';
 
 angular.module('perilus', ['mongolab'])
 .config(function($routeProvider, $locationProvider) {
   $routeProvider
-  .when('/', {controller:ListCtrl, templateUrl:'/friends'})
+  .when('/', {controller:FriendsCtrl, templateUrl:'/friends'})
   .when('/redirect', { templateUrl:'/redirect' })
   // when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
   // when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
@@ -30,8 +31,11 @@ angular.module('perilus', ['mongolab'])
   });
 });
  
-function ListCtrl($scope, User) {
-  $scope.users = User.query();
+function FriendsCtrl($scope, $http) {
+  // Get the friends
+  $http.get(svcurl + '/api/friends').success(function(data) {
+    $scope.friends = data;
+  });
 }
 
 function EditCtrl($scope, User) {
