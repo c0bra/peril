@@ -29,10 +29,10 @@ var port = process.env.PORT || 7464;
 // var clientId = process.env.SINGLY_CLIENT_ID;
 // var clientSecret = process.env.SINGLY_CLIENT_SECRET;
 
-var clientId = 'c8a7420029019de07ae0bf406ef94e79';
-var clientSecret = 'ffb97ec8fd34015bcdeae0420b47ff59';
+var clientId = '43d24e85ae2328e46daaab69686093ea';
+var clientSecret = '6101b0b0a4ad50def96e0d85cc6bbefa';
 
-var hostBaseUrl = (process.env.HOST || 'http://localhost:' + port);
+var hostBaseUrl = (process.env.HOST || 'http://perilus.herokuapp.com');
 var apiBaseUrl = process.env.SINGLY_API_HOST || 'https://api.singly.com';
 
 // Create an HTTP server
