@@ -20,7 +20,7 @@ var jade = require('jade');
 var singly = require('singly');
 var mongoose = require('mongoose');
 var ironWorker = require('iron_worker');
-var eyes = require('eyes');
+// var eyes = require('eyes');
 
 // The port that this express app will listen on
 var port = process.env.PORT || 7464;
@@ -73,6 +73,11 @@ var UserSchema = new Schema({
 }, { collection : 'user' });
 
 var User = mongoose.model('user', UserSchema);
+
+var UserHazardSchema = new Schema({
+    id            : ObjectId
+  , 
+});
 
 
 // Pick a secret to secure your session storage
@@ -325,6 +330,13 @@ app.post('/api/user/latlong', function(req, res) {
     user.save(function(err){
         res.json({ status: "updated" });
     });
+  });
+});
+
+app.get('/api/friend_alerts', function(req, res) {
+  // Get the hazards for the users the current user is following;
+  getCurrentUser(req, function(user) {
+    
   });
 });
 
