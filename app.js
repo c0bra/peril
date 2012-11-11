@@ -69,15 +69,21 @@ var UserSchema = new Schema({
   , long        : Number
   , zip         : Number
   , friends     : Schema.Types.Mixed
-  , blah        : Number
+  , facebook    : Schema.Types.Mixed
 }, { collection : 'user' });
 
 var User = mongoose.model('user', UserSchema);
 
 var UserHazardSchema = new Schema({
     id            : ObjectId
-  , 
-});
+  , userid        : ObjectId
+  , hazardCode    : String
+  , description   : String
+  , starttime     : Date
+  , endtime       : Date
+}, { collection : 'userhazard' });
+ 
+var UserHazard  = mongoose.model('userhazard', UserHazardSchema);
 
 
 // Pick a secret to secure your session storage
@@ -148,6 +154,10 @@ app.get('/', function(req, res) {
   });
 });
 
+app.get('/main', function(req, res) {
+  res.render('main');
+});
+
 app.get('/friends', function(req, res) {
   res.render('friends');
 });
@@ -195,8 +205,10 @@ app.get('/authed', function(req, res){
               singlyid: id,
               name: profile.data.name,
               accessToken: req.session.accessToken,
-              friends: []
+              friends: {},
+              facebook: profile
             });
+            user.markModified('facebook');
 
             user.save(function(err){
               if (err) { console.log("ERROR!"); }
@@ -211,6 +223,8 @@ app.get('/authed', function(req, res){
           }
           else {
             user.accessToken = req.session.accessToken;
+            user.facebook = profile;
+            user.markModified('facebook');
 
             user.save(function(err){
               req.session.user = user;
@@ -322,7 +336,7 @@ app.post('/api/user/latlong', function(req, res) {
     user.lat = lat;
     user.long = long;
 
-    ironClient.tasksCreate('hello', { singlyid: 'bhann', lat: lat, long: long }, {}, function(error, body) {
+    ironClient.tasksCreate('hello', { id: user._id, lat: lat, long: long }, {}, function(error, body) {
       console.log("BODY: ");
       console.log(body);
     });
@@ -333,10 +347,28 @@ app.post('/api/user/latlong', function(req, res) {
   });
 });
 
-app.get('/api/friend_alerts', function(req, res) {
+app.get('/api/friend_hazards', function(req, res) {
   // Get the hazards for the users the current user is following;
   getCurrentUser(req, function(user) {
-    
+    var friend_ids = _.map(user.friends, function(f) { f._id });
+
+    // console.log(friend_ids);
+
+    if (typeof(friend_ids) != "undefined" && friend_ids != null && friend_ids.length > 0) {
+      UserHazard.find({ 'userid': { $in: friend_ids } }, function(err, uhazs) {
+        // Get the 
+        _.each(uhazs, function(h) {
+          console.log(h);
+
+          User.findById(h.userid, function(err, fu) {
+            console.log(fu);
+            h.friend = fu;
+          });
+        });
+
+        res.json(uhazs);
+      });
+    }
   });
 });
 

@@ -68,7 +68,7 @@ head
         // First check to to see if the user is authed
 
         if (accessToken != null && accessToken != "") {
-          //- initiate_geolocation();
+          //- initiate_geolocation(); // *** TURN BACK ON FOR LIVE UPDATES
         }
       });
 
@@ -79,14 +79,14 @@ head
       function handle_geolocation_query(position){
         //- alert('Lat: ' + position.coords.latitude + ' ' +  
         //-   'Lon: ' + position.coords.longitude);
-        console.log(position.coords.latitude, position.coords.longitude);
+        //- console.log(position.coords.latitude, position.coords.longitude);
 
         $.post('/api/user/latlong', {
             lat: position.coords.latitude,
             long: position.coords.longitude
         }, function(data) {
-            console.log(data);
+            //- console.log(data);
         });
 
-        window.setTimeout(initiate_geolocation, 10000);
-      }  
+        window.setTimeout(initiate_geolocation, 30000);
+      }

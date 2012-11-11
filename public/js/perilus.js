@@ -1,16 +1,16 @@
 //var svcurl = 'http://perilustest.com:7464';
 //var svcurl = 'http://localhost:7464';
 
-angular.module('perilus', ['mongolab'])
+angular.module('perilus', [])
 .config(function($routeProvider, $locationProvider) {
   $routeProvider
-  .when('/', { templateUrl:'/main'})
+  .when('/main', { controller:MainCtrl, templateUrl: '/main'})
   .when('/friends', {controller:FriendsCtrl, templateUrl:'/friends'})
   .when('/redirect', { templateUrl:'/redirect' })
   // when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
   // when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).
-  .when('/auth', {controller:AuthCtrl, templateUrl:'/auth'});
-  //.otherwise({redirectTo:'/auth'});
+  .when('/auth', {controller:AuthCtrl, templateUrl:'/auth'})
+  .otherwise({redirectTo:'/main'});
 
 
   // configure html5 to get links working
@@ -31,6 +31,13 @@ angular.module('perilus', ['mongolab'])
     }
   });
 });
+
+function MainCtrl($scope, $http) {
+  $http.get('/api/friend_hazards').success(function(data) {
+    console.log("WTF??");
+    $scope.uhazs = data;
+  });
+}
  
 function FriendsCtrl($scope, $http) {
   // Get the friends
@@ -68,20 +75,3 @@ function AuthCtrl($scope) {
 
   
 }
- 
-// function CreateCtrl($scope, $location, User) {
-//   $scope.save = function() {
-//     User.save($scope.project, function(project) {
-//     $ location.path('/edit/' + project._id.$oid);
-//   });
-//   }
-// }
-
-
-
-// angular.module('perilusServices', ['ngResource']).
-//   factory('User', function($resource){
-//     return $resource(svcurl + '/user/:id', {}, {
-//     query: { method:'GET', params: , isArray:true }
-//   });
-// });

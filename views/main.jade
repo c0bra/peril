@@ -1,0 +1,12 @@
+
+#friend_hazards
+  h3 Friends
+  .span8
+  
+  .span6.well(ng-repeat='uhaz in uhaz ')
+    .span12.friend
+      | {{uhaz._id}}
+      img.profile-photo.pull-left(src="{{uhaz.friend.facebook.data.picture.data.url}}") 
+      .friend-text
+        | {{uhaz.friend.facebook.data.name}}
+        br
