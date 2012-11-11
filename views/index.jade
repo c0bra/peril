@@ -41,19 +41,15 @@ head
     .navbar.navbar-inverse.navbar-fixed-top
       .navbar-inner
         .container
-          //- a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
-          //-   span.icon-bar
-          //-   span.icon-bar
-          //-   span.icon-bar
+          a.btn.btn-navbar(data-toggle='collapse', data-target='.nav-collapse')
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
           a.brand(href='#') PerilUs
-          //- .nav-collapse.collapse
-          //-   ul.nav
-              //- li.active
-              //-   a(href='#') Home
-              //- li
-              //-   a(href='#about') About
-              //- li
-              //-   a(href='#contact') Contact
+          .nav-collapse.collapse
+            ul.nav
+              li
+                a(href='/#/friends') Friends
           //
             /.nav-collapse 
 
@@ -61,6 +57,7 @@ head
 
     script(src='js/jquery.min.js')
     script(src='js/bootstrap.min.js')
+    //- script(src='js/bootstrap-responsive.min.js')
     script(src="js/perilus.js")
     script(src="js/authRoute.js")
     script(src="js/userProfile.js")
@@ -71,16 +68,18 @@ head
         // First check to to see if the user is authed
 
         if (accessToken != null && accessToken != "") {
-          window.setTimeout(initiate_geolocation, 1000);
+          initiate_geolocation();
         }
       });
 
-      function initiate_geolocation() {  
-        navigator.geolocation.getCurrentPosition(handle_geolocation_query);  
+      function initiate_geolocation() {
+        navigator.geolocation.getCurrentPosition(handle_geolocation_query);
       }  
 
-      function handle_geolocation_query(position){  
+      function handle_geolocation_query(position){
         //- alert('Lat: ' + position.coords.latitude + ' ' +  
         //-   'Lon: ' + position.coords.longitude);
-        console.log(position.coords.latitude, position.coords.longitude)
+        console.log(position.coords.latitude, position.coords.longitude);
+
+        window.setTimeout(initiate_geolocation, 10000);
       }  

@@ -4,7 +4,8 @@
 angular.module('perilus', ['mongolab'])
 .config(function($routeProvider, $locationProvider) {
   $routeProvider
-  .when('/', {controller:FriendsCtrl, templateUrl:'/friends'})
+  .when('/', { templateUrl:'/main'})
+  .when('/friends', {controller:FriendsCtrl, templateUrl:'/friends'})
   .when('/redirect', { templateUrl:'/redirect' })
   // when('/edit/:projectId', {controller:EditCtrl, templateUrl:'detail.html'}).
   // when('/new', {controller:CreateCtrl, templateUrl:'detail.html'}).

@@ -15,6 +15,10 @@
 	padding-top: 5px;
 }
 
-.friend .buttons .btn:not(:first-child) {
+.friend .buttons .btn:not(:last-child) {
 	margin-right: 5px !important;
+}
+
+#friends .well {
+	margin-bottom: 10px;
 }

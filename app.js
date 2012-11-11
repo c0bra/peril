@@ -219,15 +219,24 @@ app.get('/api/friends', function(req, res){
   // Get the facebook friends for this user
 
   getCurrentUser(req, function(user){
-    singly.get('/services/facebook/friends', { access_token: req.session.accessToken }, function (err, sres) {
+    var opts = { qs: {} };
+    opts.qs.access_token = req.session.accessToken;
+    opts.qs.limit = 1000;
+
+    singly.get('/services/facebook/friends', opts, function (err, sres) {
       var friends = sres.body;
+
+      console.log("Count:" + friends.length);
 
       // Made id list of friends
       var friend_ids = _.map(friends, function(f){ return f.id });
       
+      console.log(friend_ids);
+
       // Get the list of this user's friends he's following
       User.find({'singlyid': { '$in': friend_ids } }, function(err, founds){
         // 'founds' is the list of users the current user is following
+        console.log(founds);
 
         var avail = [];
 
@@ -253,6 +262,8 @@ app.get('/api/friends', function(req, res){
     });
   });
 });
+
+app.get('/main', function(req, res) { res.send('') });
 
 app.get('/auth', function(req, res){
   res.render('auth', {
