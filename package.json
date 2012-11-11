@@ -1,5 +1,5 @@
 {
-   "name": "nodejs_express_skeleton",
+   "name": "perilus",
    "scripts": {
       "start": "node app"
    },
